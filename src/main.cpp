@@ -43,8 +43,24 @@ class Blop {
 public:
   struct vec cords;
   struct vec speed;
+  int death = 0;
   // warum kontte ich nicht hier drinnen das x und y definieren
-  void Draw() { DrawRectangle(cords.x, cords.y, 10, 10, yellow); }
+
+  void spawn() {
+  cords.x = rand() % 500;
+  cords.y = rand() % 500;
+  speed.x = 4;
+  speed.y = rand() % 3;
+  };
+  int Draw() { 
+    int olddeath = death;
+    if(death != 0){
+      spawn();
+      death = 0;
+    }
+    DrawRectangle(cords.x, cords.y, 10, 10, yellow);  
+    return olddeath;
+  }
 };
 
 int main() {
@@ -52,10 +68,13 @@ int main() {
   // Create the window and OpenGL context
   InitWindow(Cellsize * Cellcount, Cellsize * Cellcount, "Hello Raylib");
   SetTargetFPS(80);
+  srand(time(0));
   // game loop
-  //
+  
+
+  std::string score1 = "0";
+  std::string score2 = "";
   const int speedb = 5;
-  Blop kugel = Blop();
   Brick brick = Brick();
   brick.x = 13;
   brick.y = 3;
@@ -63,14 +82,8 @@ int main() {
   brick2.x = Cellcount * Cellsize - 23;
   brick2.y = 3;
 
-  // kugel.cords.x = Cellcount * Cellsize * 0.5;
-  kugel.cords.x = 4;
-  kugel.cords.y = 3;
-  // kugel.speed.x = rand() % 4;
-  kugel.speed.x = 4;
-  kugel.speed.y = rand() % 3;
-  Vector2 score = {0, 0};
-  printf(" test score %f %f \n", score.x, score.y);
+  Blop kugel = Blop();
+  kugel.spawn();
   while (!WindowShouldClose()) // run the loop untill the user presses ESCAPE or
                                // presses the Close button on the window
   {
@@ -142,6 +155,7 @@ int main() {
       printf(" Rechte Wand \n");
       kugel.speed.x = kugel.speed.x * -1;
       kugel.speed.y = kugel.speed.x * -1;
+      kugel.death = 1;
     }
 
     if (kugel.cords.x == brick.x &&
@@ -157,6 +171,7 @@ int main() {
 
     if (kugel.cords.x < 0) {
       printf(" Linke Wand \n");
+      kugel.death = 2;
     }
 
     if (kugel.cords.y >= Cellcount * Cellsize || kugel.cords.y < 0) {
@@ -170,10 +185,16 @@ int main() {
 
     BeginDrawing();
 
-    kugel.Draw();
+    DrawText(score1.c_str(), 200, 200, 40, WHITE);
+    DrawText(score2.c_str(), 550, 200, 40, WHITE);
+    int res = kugel.Draw();
+    if(res == 1){
+      score1 = std::to_string( res + std::stoi(score1));
+    } else if (res == 2){
+      score2 = std::to_string(res-1 + std::stoi(score2));
+    }
     brick.Draw();
     brick2.Draw();
-
     ClearBackground(black);
 
     EndDrawing();
