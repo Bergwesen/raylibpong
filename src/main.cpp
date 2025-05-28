@@ -8,7 +8,7 @@
 #include <cmath>
 #define _USE_MATH_DEFINES
 
-double Maxwinkel = M_PI*0.5;
+double Maxwinkel = M_PI*0.4;
 int ballspeed = 2;
 
 Color yellow = {255, 255, 0, 255};
@@ -23,15 +23,6 @@ int Cellcount = 25;
 double oldtime = 0;
 
 
-/*bool eventrigger(double intervall) {
-  double zeitspanne = GetTime() - oldtime;
-  if (zeitspanne >= intervall) {
-    oldtime = GetTime();
-    return true;
-  } else {
-    return false;
-  }
-} */
 
 struct vec {
   double x;
@@ -54,13 +45,9 @@ public:
   }else{
     direction = 1;
   } 
-  //speed.x=  ballspeed*(((rand()%10)+10)/10) *direction;
-  //speed.y=  ballspeed*(((rand()%10)+10)/10) ;
   double einheitsx = (( (double) ((rand()) % 9)+1)) / 10;
   double einheitsy = 1- std::pow(einheitsx,2);
-  std::cout << " Einheitstest " << einheitsx << " und " << einheitsy << std::endl;
-  //speed.x=  ballspeed*direction*einheitsx;
-  //speed.y=  ballspeed*einheitsy;
+//  std::cout << " Einheitstest " << einheitsx << " und " << einheitsy << std::endl;
   speed.x=  ballspeed*direction*1;
   speed.y=  ballspeed*einheitsy*0;
   };
@@ -88,16 +75,12 @@ public:
     double relativy = kugel->cords.y - y - (heightb / 2);
     double normrelativy = (relativy/(heightb/2));
     double winkel = Maxwinkel * normrelativy;
- //   std::cout << "rel " << relativy << " norm " <<normrelativy<< " winkel "<< winkel  <<std::endl;
-//    std::cout<< "old " << kugel->speed.x << " und " << kugel->speed.y << std::endl;
     if( brick == 1){
       kugel->speed.x = ballspeed * std::cos(winkel);
       kugel->speed.y = -ballspeed * std::sin(winkel);
-     // std::cout << "new 1 " << kugel->speed.x << "test "<< std::cos(winkel) << " und " << kugel->speed.y << " " << winkel<< std::endl;
     }else {
       kugel->speed.x = -ballspeed * std::cos(winkel);
       kugel->speed.y = ballspeed * std::sin(winkel);
-      //std::cout << "new 2 " << kugel->speed.x << "test "<< std::cos(winkel) << " und " << kugel->speed.y << " " << winkel<< std::endl;
     }
 
 
@@ -108,7 +91,7 @@ int main() {
 
   // Create the window and OpenGL context
   InitWindow(Cellsize * Cellcount, Cellsize * Cellcount, "Pong");
-  SetTargetFPS(80);
+  SetTargetFPS(90);
   srand(time(0));
   
   //Werte Initialisierung
@@ -156,6 +139,18 @@ int main() {
     case Game:
       {
 
+    struct vec oldvecs;
+    oldvecs.x = kugel.cords.x;
+    oldvecs.y = kugel.cords.y;
+
+
+    kugel.cords.x = kugel.cords.x + kugel.speed.x*ballspeed;
+    kugel.cords.y = kugel.cords.y + kugel.speed.y*ballspeed;
+
+
+    int yhit = ((kugel.cords.y-oldvecs.y)/(oldvecs.x-kugel.cords.x) * brick.x) +kugel.cords.y;
+    int yhit2 = ((kugel.cords.y-oldvecs.y)/(-oldvecs.x+kugel.cords.x) * brick2.x) +kugel.cords.y;
+
 
 
 
@@ -178,33 +173,31 @@ int main() {
       brick2.y = brick2.y - speedb;
     }
     // Kugel move
+    /*
     struct vec oldvecs;
     oldvecs.x = kugel.cords.x;
     oldvecs.y = kugel.cords.y;
 
-    //kugel.cords.x = kugel.cords.x + kugel.speed.x*kugel.schnell;
-    //kugel.cords.y = kugel.cords.y + kugel.speed.y*kugel.schnell;
 
     kugel.cords.x = kugel.cords.x + kugel.speed.x*ballspeed;
     kugel.cords.y = kugel.cords.y + kugel.speed.y*ballspeed;
 
 
     int yhit = ((kugel.cords.y-oldvecs.y)/(oldvecs.x-kugel.cords.x) * brick.x) +kugel.cords.y;
-    int yhit2 = ((kugel.cords.y-oldvecs.y)/(-oldvecs.x+kugel.cords.x) * brick2.x) +kugel.cords.y;
+    int yhit2 = ((kugel.cords.y-oldvecs.y)/(-oldvecs.x+kugel.cords.x) * brick2.x) +kugel.cords.y; */ 
+
+    //FEHLER SIND DIE YHIT WERTE TEMPORAERE LOESUNG WAERE EIN YHIT 1 ODER YHIT 2 
 
     if( kugel.cords.x <= brick.x && oldvecs.x >= brick.x)
     {
 
       if( yhit >= brick.y && yhit <= (brick.y+brick.heightb)){
-    //std::cout << yhit<< " und "<< brick.y << " u " << brick.y +brick.heightb << std::endl;
-      std::cout << " tunnel 1" << std::endl;
+//      std::cout << " tunnel 1" << std::endl;
       kugel.cords.y = yhit;
       kugel.cords.x = brick.x;
       brick.hit(&kugel,1);
-      //kugel.speed.x = -kugel.speed.x ;
-      //kugel.speed.y = -kugel.speed.y ;
       }else {
-        std::cout << "1  tunnel but no hit " << std::endl;
+ //       std::cout << "1  tunnel but no hit " << std::endl;
       }
 
     }
@@ -212,17 +205,18 @@ int main() {
     
     if( kugel.cords.x >= brick2.x && oldvecs.x <= brick2.x)
     { 
-      if( yhit >= brick2.y && yhit <= (brick2.y+brick2.heightb)){
-        std::cout << " tunnel " << std::endl;
-   // std::cout << yhit<< " und "<< brick.y << " u " << brick2.y +brick2.heightb << std::endl;
-      kugel.cords.y = yhit;
+      std::cout<< "PASS 1 "<< yhit2 << " oder "<< yhit<< " und "<< brick2.y << " und " << brick2.y+brick2.heightb<<std::endl;
+      if( yhit2 >= brick2.y && yhit <= (brick2.y+brick2.heightb)){
+  //      std::cout << " tunnel " << std::endl;
+      kugel.cords.y = yhit2;
       kugel.cords.x = brick2.x;
-        brick2.hit(&kugel,2);
-      //kugel.speed.x = -kugel.speed.x ;
-      //kugel.speed.y = kugel.speed.y ;
+      brick2.hit(&kugel, 2);
+
+      std::cout<< "PASS 2"<< std::endl;
       }else{
 
-        std::cout << "  tunnel but no hit " << std::endl;
+      std::cout<< "PASS 3 "<< yhit2 << " und "<< brick2.y << " und " << brick2.y+brick2.heightb<<std::endl;
+   //     std::cout << "  tunnel but no hit " << std::endl;
       }
 
     }
