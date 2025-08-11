@@ -175,11 +175,11 @@ int main() {
       brick2.y = brick2.y - speedb;
     }
 
+
+
     if( kugel.cords.x <= brick.x && oldvecs.x >= brick.x)
     {
 
-      //std::cout<< "PASS 2 "<< yhit << " und "<< brick.y << " und " << brick.y+brick.heightb<<std::endl;
-      // +- 10 Wegen der hoehe der kugel
       if( yhit >= brick.y-10 && yhit <= (brick.y+brick.heightb+10)){
       kugel.cords.y = yhit;
       kugel.cords.x = brick.x;
@@ -191,18 +191,14 @@ int main() {
     
     if( kugel.cords.x >= brick2.x && oldvecs.x <= brick2.x)
     { 
-      //std::cout<< "PASS 1 "<< yhit2 << " und "<< brick2.y << " und " << brick2.y+brick2.heightb<<std::endl;
 
-      // +- 10 Wegen der hoehe der kugel
       if( yhit2 >= brick2.y-10 && yhit2 <= (brick2.y+brick2.heightb+10)){
       kugel.cords.y = yhit2;
       kugel.cords.x = brick2.x;
       brick2.hit(&kugel, 2);
 
-      //std::cout<< "PASS 2"<< std::endl;
       }
 
-      //std::cout<< "PASS 3 "<< yhit2 << " und "<< brick2.y << " und " << brick2.y+brick2.heightb<<std::endl;
 
     }
 
@@ -210,24 +206,20 @@ int main() {
 
 
     if (kugel.cords.x >= Cellcount * Cellsize || kugel.cords.x < 0) {
-     // printf(" Rechte Wand \n");
       kugel.speed.x = kugel.speed.x * -1;
       kugel.speed.y = kugel.speed.x * -1;
       kugel.death = 1;
     }
 
     if (kugel.cords.x < 0) {
-      //printf(" Linke Wand \n");
       kugel.death = 2;
     }
 
     if (kugel.cords.y >= Cellcount * Cellsize || kugel.cords.y < 0) {
-      //printf(" untere Wand \n");
       kugel.speed.y = kugel.speed.y * -1;
     }
 
     if (kugel.cords.y < 0) {
-      //printf(" obere  Wand \n");
     }
       framecounter = framecounter +1;
       if(IsKeyDown(KEY_P) && framecounter > 50){
